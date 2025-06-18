@@ -1,0 +1,15 @@
+user:
+  name: Kᴜʀᴏ Rᴀɪᴊɪɴ
+  github: KuroXDRises
+
+language: "python"
+python_version: "3.13"
+
+commands:
+  build:
+    - "pip install -r requirements.txt"
+  start:
+    - "python3 main.py"
+
+env:
+  - "ENVIRONMENT=production"
