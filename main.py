@@ -3,7 +3,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, 
 from db import users_col
 
 app = Client("beyblade_pre_register", api_id=27548865, api_hash="db07e06a5eb288c706d4df697b71ab61",
-             bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg ")
+             bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg")
 
 @app.on_message(filters.command("start"))
 async def start_handler(client, message: Message):
