@@ -25,7 +25,6 @@ async def start_handler(client, message: Message):
 @app.on_callback_query(filters.regex("preregister"))
 async def preregister_handler(client, query: CallbackQuery):
     user_id = query.from_user.id
-
     # Check again to avoid double registration
     user = users_col.find_one({"_id": user_id})
     if user and user.get("pre_registered"):
@@ -37,7 +36,6 @@ async def preregister_handler(client, query: CallbackQuery):
         {"$set": {"pre_registered": True}},
         upsert=True
     )
-
     await query.message.edit_text(
         "✅ You are now **Pre-Registered**!\n\n"
         "🎁 You’ll receive exclusive in-game rewards once we go live.\nStay tuned!",
@@ -45,3 +43,5 @@ async def preregister_handler(client, query: CallbackQuery):
             [InlineKeyboardButton("📢 Join Channel", url="https://t.me/YourChannel")]
         ])
     )
+if __name__=="__main__":
+    app.run()
