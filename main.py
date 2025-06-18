@@ -43,5 +43,5 @@ async def preregister_handler(client, query: CallbackQuery):
             [InlineKeyboardButton("📢 Join Channel", url="https://t.me/YourChannel")]
         ])
     )
-if __name__=="__main__":
-    app.run()
+app.run()
+print("BOT STARTED")
