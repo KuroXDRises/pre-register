@@ -56,7 +56,7 @@ async def preregister_handler(client, query: CallbackQuery):
         "🎁 You’ll receive exclusive in-game rewards on launch day.\n"
         "📢 Stay updated via our channel!",
         reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("📢 Join Channel", url="https://t.me/YourChannel")]
+            [InlineKeyboardButton("📢 Join Channel", url="https://t.me/Bey_war_updates")]
         ])
     )
     await query.answer("🎯 Registered Successfully!", show_alert=True)
