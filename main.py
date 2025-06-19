@@ -1,10 +1,16 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from db import users_col
+from db import users_col  # MongoDB collection
 
-app = Client("beyblade_pre_register", api_id=27548865, api_hash="db07e06a5eb288c706d4df697b71ab61",
-             bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg")
+# Setup your Pyrogram Client
+app = Client(
+    "beyblade_pre_register",
+    api_id=27548865,
+    api_hash="db07e06a5eb288c706d4df697b71ab61",
+    bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg"
+)
 
+# START command handler
 @app.on_message(filters.command("start"))
 async def start_handler(client, message: Message):
     user_id = message.from_user.id
@@ -14,34 +20,47 @@ async def start_handler(client, message: Message):
         return await message.reply_text("✅ You are already Pre-Registered! 🚀")
 
     await message.reply_text(
-        "**🛠️ This bot is under Pre-Registration.**\n\n"
+        "**🛠️ Welcome to BEYBLADE WARS Pre-Registration!**\n\n"
         "🎮 Version 1 launching soon...\n"
-        "Click below to pre-register and claim exclusive rewards when we launch!",
+        "Click the button below to pre-register and claim exclusive launch rewards!",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("🔓 Pre-Register", callback_data="preregister")]
         ])
     )
 
-@app.on_callback_query(filters.regex("preregister"))
+# Callback for Pre-Register button
+@app.on_callback_query(filters.regex("^preregister"))
 async def preregister_handler(client, query: CallbackQuery):
     user_id = query.from_user.id
-    # Check again to avoid double registration
+
+    # Prevent double-registration
     user = users_col.find_one({"_id": user_id})
     if user and user.get("pre_registered"):
-        await query.answer("Already pre-registered!", show_alert=True)
+        await query.answer("✅ Already pre-registered!", show_alert=True)
         return
 
+    # Save to DB
     users_col.update_one(
         {"_id": user_id},
-        {"$set": {"pre_registered": True}},
+        {"$set": {
+            "pre_registered": True,
+            "name": query.from_user.first_name,
+            "username": query.from_user.username,
+            "joined_at": query.message.date.isoformat()
+        }},
         upsert=True
     )
+
     await query.message.edit_text(
-        "✅ You are now **Pre-Registered**!\n\n"
-        "🎁 You’ll receive exclusive in-game rewards once we go live.\nStay tuned!",
+        "🎉 You are now **Pre-Registered!**\n\n"
+        "🎁 You’ll receive exclusive in-game rewards on launch day.\n"
+        "📢 Stay updated via our channel!",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("📢 Join Channel", url="https://t.me/YourChannel")]
         ])
     )
-app.run()
+    await query.answer("🎯 Registered Successfully!", show_alert=True)
+
+# Run the bot
 print("BOT STARTED")
+app.run()
