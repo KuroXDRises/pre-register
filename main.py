@@ -1,8 +1,8 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from db import users_col  # MongoDB collection
+from db import users_col  # MongoDB collection (must be motor async)
+from datetime import datetime
 
-# Setup your Pyrogram Client
 app = Client(
     "beyblade_pre_register",
     api_id=27548865,
@@ -10,12 +10,11 @@ app = Client(
     bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg"
 )
 
-# START command handler
 @app.on_message(filters.command("start"))
 async def start_handler(client, message: Message):
     user_id = message.from_user.id
 
-    user = users_col.find_one({"_id": user_id})
+    user = await users_col.find_one({"_id": user_id})
     if user and user.get("pre_registered"):
         return await message.reply_text("✅ You are already Pre-Registered! 🚀")
 
@@ -28,25 +27,22 @@ async def start_handler(client, message: Message):
         ])
     )
 
-# Callback for Pre-Register button
 @app.on_callback_query(filters.regex("^preregister"))
 async def preregister_handler(client, query: CallbackQuery):
     user_id = query.from_user.id
 
-    # Prevent double-registration
-    user = users_col.find_one({"_id": user_id})
+    user = await users_col.find_one({"_id": user_id})
     if user and user.get("pre_registered"):
         await query.answer("✅ Already pre-registered!", show_alert=True)
         return
 
-    # Save to DB
-    users_col.update_one(
+    await users_col.update_one(
         {"_id": user_id},
         {"$set": {
             "pre_registered": True,
             "name": query.from_user.first_name,
             "username": query.from_user.username,
-            "joined_at": query.message.date.isoformat()
+            "joined_at": datetime.utcnow().isoformat()
         }},
         upsert=True
     )
@@ -61,6 +57,5 @@ async def preregister_handler(client, query: CallbackQuery):
     )
     await query.answer("🎯 Registered Successfully!", show_alert=True)
 
-# Run the bot
 print("BOT STARTED")
 app.run()
