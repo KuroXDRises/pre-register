@@ -7,7 +7,7 @@ app = Client(
     "beyblade_pre_register",
     api_id=27548865,
     api_hash="db07e06a5eb288c706d4df697b71ab61",
-    bot_token="7391978734:AAFX5BrojPJeL2cH0JGdwfCpztatqD6nXXg"
+    bot_token="7391978734:AAHCn_W4UMO_spWacqNBHW96A1c6BpUX3E4"
 )
 
 @app.on_message(filters.command("start"))
